@@ -1,34 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurantapp/home_widgets/main_buttons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:restaurantapp/models/foods_items.dart';
 import 'package:restaurantapp/services/authServices.dart';
 import 'dart:io';
+
 import 'package:restaurantapp/services/firestoreServices.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 
-//import 'package:path/path.dart';
-
-class Home extends StatefulWidget {
+class AddDishes extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _AddDishesState createState() => _AddDishesState();
 }
 
-class _HomeState extends State<Home> {
-  String url;
-  File _image;
-  var selectedSection;
+class _AddDishesState extends State<AddDishes> {
+  //-------------------> Foods List <-------------------
 
+  List<Foods> foods = new List<Foods>();
+  List<DropdownMenuItem<Foods>> _dropDownMenu;
+  Foods _selectedFoods;
+
+  onChangeDropFoods(Foods selectedFoods) {
+    setState(() {
+      _selectedFoods = selectedFoods;
+    });
+  }
+
+  //-------------------> END Foods List <-------------------
+  final AuthService _authService = AuthService();
 
   //Progress dialog
   ProgressDialog pr;
   double percentage = 0.0;
-
-  //Function to uplouad image to fire storage and get the url
-  Future uploadImage(BuildContext context) async {
-    pr.show();
+  //--------Function to add into Foods
+  Future uploadImage() async {
     String fileName = '${DateTime.now()}.png';
     StorageReference firebaseStorage =
         FirebaseStorage.instance.ref().child(fileName);
@@ -37,7 +44,7 @@ class _HomeState extends State<Home> {
     url = await firebaseStorage.getDownloadURL() as String;
 
     if (url.isNotEmpty) {
-      firestoreService.UpdateSection(sectionName, url);
+      firestoreService.UpdateFoods(sectionName, url, price, _selectedFoods.id);
       Fluttertoast.showToast(
           msg: "تمت أظافة القسم",
           toastLength: Toast.LENGTH_LONG,
@@ -46,38 +53,32 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.green[200],
           textColor: Colors.white,
           fontSize: 16.0);
-      Navigator.pop(context);
     }
-    pr.hide();
   }
 
-  final AuthService _authService = AuthService();
+  //------------------------------------->>>>>>>>
+  String url;
+  File _image;
+
   final FirestoreService firestoreService = FirestoreService();
   final _formKey = GlobalKey<FormState>();
   String sectionName = '';
   String imageLink = '';
+  String price = '';
   String error = '';
   String imageError = '';
-
-
-
+  var sectionValue;
+  var secID;
+//---------------------------------------->>>>>>
   @override
   Widget build(BuildContext context) {
-    //init progress dialog
-    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
-    //Optional
-    pr.style(
-      message: '...جاري الرفع',
-      borderRadius: 10.0,
-      backgroundColor: Colors.white,
-      progressWidget: CircularProgressIndicator(),
-      elevation: 10.0,
-      insetAnimCurve: Curves.easeInOut,
-      progressTextStyle: TextStyle(
-          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
-      messageTextStyle: TextStyle(
-          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
-    );
+    Future getImage() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        _image = image;
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.brown[50],
       appBar: AppBar(
@@ -95,24 +96,7 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: SingleChildScrollView(
-        child: ButtonsToAdd(StartAnewSection),
-      ),
-    );
-  }
-
-  
-  Future<void> StartAnewSection() async {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        Future getImage() async {
-          var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-          setState(() {
-            _image = image;
-          });
-        }
-
-        return SingleChildScrollView(
+        child: SingleChildScrollView(
           child: Card(
             color: Colors.brown[50],
             elevation: 15,
@@ -124,7 +108,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: <Widget>[
                     Text(
-                      "إنشاء قسم جديد",
+                      "إظافة طبق",
                       style: TextStyle(fontSize: 18, color: Colors.brown[400]),
                     ),
                     SizedBox(
@@ -134,11 +118,11 @@ class _HomeState extends State<Home> {
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
-                          hintText: "أسم القسم"),
+                          hintText: "أسم الطبق"),
                       textAlign: TextAlign.right,
                       style: TextStyle(fontSize: 20),
                       validator: (val) =>
-                          val.isEmpty ? 'أسم القسم مطلوب' : null,
+                          val.isEmpty ? 'يجب كتابة اسم الطبق' : null,
                       onChanged: (val) {
                         setState(() {
                           sectionName = val;
@@ -148,6 +132,68 @@ class _HomeState extends State<Home> {
                     SizedBox(
                       height: 25,
                     ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          hintText: "سعر الطبق"),
+                      textAlign: TextAlign.right,
+                      style: TextStyle(fontSize: 20),
+                      validator: (val) =>
+                          val.isEmpty ? 'يجب كتابة السعر' : null,
+                      onChanged: (val) {
+                        setState(() {
+                          price = val;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    //--------------------------------------------------------->
+                    StreamBuilder<QuerySnapshot>(
+                      stream:
+                          Firestore.instance.collection('category').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text("Loading...");
+                        } else {
+                          for (var i = 0;
+                              i < snapshot.data.documents.length;
+                              i++) {
+                            //Name
+                            String snap = snapshot.data.documents[i]['name'];
+
+                            //ID
+                            String snapID =
+                                snapshot.data.documents[i].documentID;
+                            if (snapshot.data.documents.length >
+                                foods.length) {
+                              foods.add(Foods(snapID, snap));
+                            } else {
+                              break;
+                            }
+                          }
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              DropdownButton<Foods>(
+                                items: foods.map((Foods f) {
+                                  return DropdownMenuItem(
+                                    value: f,
+                                    child: Text(f.name),
+                                  );
+                                }).toList(),
+                                onChanged: onChangeDropFoods,
+                                value: _selectedFoods,
+                              )
+                            ],
+                          );
+                        }
+                      },
+                    ),
+
                     SizedBox(
                       height: 25,
                     ),
@@ -201,7 +247,7 @@ class _HomeState extends State<Home> {
                         onPressed: () async {
                           if (_formKey.currentState.validate() ||
                               _image != null) {
-                            uploadImage(context);
+                            uploadImage();
                           }
                         })
                   ],
@@ -209,8 +255,8 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

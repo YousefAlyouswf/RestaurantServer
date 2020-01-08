@@ -1,9 +1,11 @@
+
+
 import 'package:flutter/material.dart';
+import 'package:restaurantapp/screens/home/adddishes.dart';
 
 class ButtonsToAdd extends StatelessWidget {
   Function StartAnewSection;
-  Function AddNewDishes;
-  ButtonsToAdd(this.StartAnewSection, this.AddNewDishes);
+  ButtonsToAdd(this.StartAnewSection);
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -36,7 +38,17 @@ class ButtonsToAdd extends StatelessWidget {
               style: TextStyle(fontSize: 18),
             ),
             elevation: 5,
-            onPressed: AddNewDishes,
+            onPressed: () {
+              print("object");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AddDishes();
+                  },
+                ),
+              );
+            },
           ),
         ),
       ],
