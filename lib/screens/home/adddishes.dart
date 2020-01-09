@@ -244,6 +244,7 @@ class _AddDishesState extends State<AddDishes> {
                                 }).toList(),
                                 onChanged: onChangeDropFoods,
                                 value: _selectedFoods,
+                                hint: Text("الأقسام المتاحة"),
                               )
                             ],
                           );
