@@ -36,6 +36,7 @@ class _AddDishesState extends State<AddDishes> {
   double percentage = 0.0;
   //--------Function to add into Foods
   Future uploadImage() async {
+    pr.show();
     String fileName = '${DateTime.now()}.png';
     StorageReference firebaseStorage =
         FirebaseStorage.instance.ref().child(fileName);
@@ -54,6 +55,7 @@ class _AddDishesState extends State<AddDishes> {
           textColor: Colors.white,
           fontSize: 16.0);
     }
+    pr.hide();
   }
 
   //------------------------------------->>>>>>>>
@@ -79,6 +81,21 @@ class _AddDishesState extends State<AddDishes> {
       });
     }
 
+    //init progress dialog
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+    //Optional
+    pr.style(
+      message: '...جاري الرفع',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
     return Scaffold(
       backgroundColor: Colors.brown[50],
       appBar: AppBar(
@@ -110,6 +127,47 @@ class _AddDishesState extends State<AddDishes> {
                     Text(
                       "إظافة طبق",
                       style: TextStyle(fontSize: 18, color: Colors.brown[400]),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                     SizedBox(
+                      height: 25,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.center,
+                          child: CircleAvatar(
+                            radius: 50,
+                            child: ClipOval(
+                              child: SizedBox(
+                                height: 180,
+                                width: 180,
+                                child: (_image != null)
+                                    ? Image.file(_image, fit: BoxFit.fill)
+                                    : Image.network(
+                                        'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/diner-restaurant-logo-design-template-0899ae0c7e72cded1c0abc4fe2d76ae4_screen.jpg?ts=1561476509',
+                                        fit: BoxFit.fill,
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 18),
+                          child: IconButton(
+                            iconSize: 50,
+                            padding: EdgeInsets.all(0),
+                            icon: Icon(Icons.image),
+                            onPressed: () {
+                              getImage();
+                            },
+                          ),
+                        )
+                      ],
                     ),
                     SizedBox(
                       height: 25,
@@ -167,8 +225,7 @@ class _AddDishesState extends State<AddDishes> {
                             //ID
                             String snapID =
                                 snapshot.data.documents[i].documentID;
-                            if (snapshot.data.documents.length >
-                                foods.length) {
+                            if (snapshot.data.documents.length > foods.length) {
                               foods.add(Foods(snapID, snap));
                             } else {
                               break;
@@ -194,44 +251,7 @@ class _AddDishesState extends State<AddDishes> {
                       },
                     ),
 
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.center,
-                          child: CircleAvatar(
-                            radius: 50,
-                            child: ClipOval(
-                              child: SizedBox(
-                                height: 180,
-                                width: 180,
-                                child: (_image != null)
-                                    ? Image.file(_image, fit: BoxFit.fill)
-                                    : Image.network(
-                                        'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/diner-restaurant-logo-design-template-0899ae0c7e72cded1c0abc4fe2d76ae4_screen.jpg?ts=1561476509',
-                                        fit: BoxFit.fill,
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 18),
-                          child: IconButton(
-                            iconSize: 50,
-                            padding: EdgeInsets.all(0),
-                            icon: Icon(Icons.image),
-                            onPressed: () {
-                              getImage();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
+                   
                     SizedBox(
                       height: 25,
                     ),

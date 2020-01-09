@@ -1,7 +1,6 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:restaurantapp/screens/home/adddishes.dart';
+import 'package:restaurantapp/screens/home/addsection.dart';
 
 class ButtonsToAdd extends StatelessWidget {
   Function StartAnewSection;
@@ -22,7 +21,16 @@ class ButtonsToAdd extends StatelessWidget {
               style: TextStyle(fontSize: 18),
             ),
             elevation: 5,
-            onPressed: StartAnewSection,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AddSection();
+                  },
+                ),
+              );
+            },
           ),
         ),
         SizedBox(
@@ -39,7 +47,6 @@ class ButtonsToAdd extends StatelessWidget {
             ),
             elevation: 5,
             onPressed: () {
-              print("object");
               Navigator.push(
                 context,
                 MaterialPageRoute(
