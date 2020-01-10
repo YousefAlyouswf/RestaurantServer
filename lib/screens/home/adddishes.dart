@@ -113,166 +113,160 @@ class _AddDishesState extends State<AddDishes> {
         ],
       ),
       body: SingleChildScrollView(
-        child: SingleChildScrollView(
-          child: Card(
-            color: Colors.brown[50],
-            elevation: 15,
-            child: Container(
-              margin: EdgeInsets.all(15),
-              padding: EdgeInsets.all(15),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "إظافة طبق",
-                      style: TextStyle(fontSize: 18, color: Colors.brown[400]),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                     SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.center,
-                          child: CircleAvatar(
-                            radius: 50,
-                            child: ClipOval(
-                              child: SizedBox(
-                                height: 180,
-                                width: 180,
-                                child: (_image != null)
-                                    ? Image.file(_image, fit: BoxFit.fill)
-                                    : Image.network(
-                                        'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/diner-restaurant-logo-design-template-0899ae0c7e72cded1c0abc4fe2d76ae4_screen.jpg?ts=1561476509',
-                                        fit: BoxFit.fill,
-                                      ),
-                              ),
+        child: Card(
+          color: Colors.brown[50],
+          elevation: 15,
+          child: Container(
+            margin: EdgeInsets.all(15),
+            padding: EdgeInsets.all(15),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    "إظافة طبق",
+                    style: TextStyle(fontSize: 18, color: Colors.brown[400]),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.center,
+                        child: CircleAvatar(
+                          radius: 50,
+                          child: ClipOval(
+                            child: SizedBox(
+                              height: 180,
+                              width: 180,
+                              child: (_image != null)
+                                  ? Image.file(_image, fit: BoxFit.fill)
+                                  : Image.network(
+                                      'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/diner-restaurant-logo-design-template-0899ae0c7e72cded1c0abc4fe2d76ae4_screen.jpg?ts=1561476509',
+                                      fit: BoxFit.fill,
+                                    ),
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 18),
-                          child: IconButton(
-                            iconSize: 50,
-                            padding: EdgeInsets.all(0),
-                            icon: Icon(Icons.image),
-                            onPressed: () {
-                              getImage();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: "أسم الطبق"),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 20),
-                      validator: (val) =>
-                          val.isEmpty ? 'يجب كتابة اسم الطبق' : null,
-                      onChanged: (val) {
-                        setState(() {
-                          sectionName = val;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: "سعر الطبق"),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 20),
-                      validator: (val) =>
-                          val.isEmpty ? 'يجب كتابة السعر' : null,
-                      onChanged: (val) {
-                        setState(() {
-                          price = val;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    //--------------------------------------------------------->
-                    StreamBuilder<QuerySnapshot>(
-                      stream:
-                          Firestore.instance.collection('category').snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Text("Loading...");
-                        } else {
-                          for (var i = 0;
-                              i < snapshot.data.documents.length;
-                              i++) {
-                            //Name
-                            String snap = snapshot.data.documents[i]['name'];
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 18),
+                        child: IconButton(
+                          iconSize: 50,
+                          padding: EdgeInsets.all(0),
+                          icon: Icon(Icons.image),
+                          onPressed: () {
+                            getImage();
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: "أسم الطبق"),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 20),
+                    validator: (val) =>
+                        val.isEmpty ? 'يجب كتابة اسم الطبق' : null,
+                    onChanged: (val) {
+                      setState(() {
+                        sectionName = val;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: "سعر الطبق"),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 20),
+                    validator: (val) => val.isEmpty ? 'يجب كتابة السعر' : null,
+                    onChanged: (val) {
+                      setState(() {
+                        price = val;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  //--------------------------------------------------------->
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        Firestore.instance.collection('category').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Text("Loading...");
+                      } else {
+                        for (var i = 0;
+                            i < snapshot.data.documents.length;
+                            i++) {
+                          //Name
+                          String snap = snapshot.data.documents[i]['name'];
 
-                            //ID
-                            String snapID =
-                                snapshot.data.documents[i].documentID;
-                            if (snapshot.data.documents.length > foods.length) {
-                              foods.add(Foods(snapID, snap));
-                            } else {
-                              break;
-                            }
+                          //ID
+                          String snapID = snapshot.data.documents[i].documentID;
+                          if (snapshot.data.documents.length > foods.length) {
+                            foods.add(Foods(snapID, snap));
+                          } else {
+                            break;
                           }
-
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              DropdownButton<Foods>(
-                                items: foods.map((Foods f) {
-                                  return DropdownMenuItem(
-                                    value: f,
-                                    child: Text(f.name),
-                                  );
-                                }).toList(),
-                                onChanged: onChangeDropFoods,
-                                value: _selectedFoods,
-                                hint: Text("الأقسام المتاحة"),
-                              )
-                            ],
-                          );
                         }
-                      },
-                    ),
 
-                   
-                    SizedBox(
-                      height: 25,
-                    ),
-                    RaisedButton(
-                        child: Text(
-                          "إنشاء",
-                          style: TextStyle(color: Colors.white, fontSize: 22),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
-                        ),
-                        color: Colors.pink[400],
-                        onPressed: () async {
-                          if (_formKey.currentState.validate() ||
-                              _image != null) {
-                            uploadImage();
-                          }
-                        })
-                  ],
-                ),
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            DropdownButton<Foods>(
+                              items: foods.map((Foods f) {
+                                return DropdownMenuItem(
+                                  value: f,
+                                  child: Text(f.name),
+                                );
+                              }).toList(),
+                              onChanged: onChangeDropFoods,
+                              value: _selectedFoods,
+                              hint: Text("الأقسام المتاحة"),
+                            )
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  RaisedButton(
+                      child: Text(
+                        "إنشاء",
+                        style: TextStyle(color: Colors.white, fontSize: 22),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(18.0),
+                      ),
+                      color: Colors.pink[400],
+                      onPressed: () async {
+                        if (_formKey.currentState.validate() ||
+                            _image != null) {
+                          uploadImage();
+                        }
+                      })
+                ],
               ),
             ),
           ),

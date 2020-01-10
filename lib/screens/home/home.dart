@@ -21,7 +21,6 @@ class _HomeState extends State<Home> {
   File _image;
   var selectedSection;
 
-
   //Progress dialog
   ProgressDialog pr;
   double percentage = 0.0;
@@ -59,8 +58,6 @@ class _HomeState extends State<Home> {
   String error = '';
   String imageError = '';
 
-
-
   @override
   Widget build(BuildContext context) {
     //init progress dialog
@@ -95,122 +92,8 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: SingleChildScrollView(
-        child: ButtonsToAdd(StartAnewSection),
+        child: ButtonsToAdd(),
       ),
-    );
-  }
-
-  
-  Future<void> StartAnewSection() async {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        Future getImage() async {
-          var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-          setState(() {
-            _image = image;
-          });
-        }
-
-        return SingleChildScrollView(
-          child: Card(
-            color: Colors.brown[50],
-            elevation: 15,
-            child: Container(
-              margin: EdgeInsets.all(15),
-              padding: EdgeInsets.all(15),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "إنشاء قسم جديد",
-                      style: TextStyle(fontSize: 18, color: Colors.brown[400]),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: "أسم القسم"),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 20),
-                      validator: (val) =>
-                          val.isEmpty ? 'أسم القسم مطلوب' : null,
-                      onChanged: (val) {
-                        setState(() {
-                          sectionName = val;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.center,
-                          child: CircleAvatar(
-                            radius: 50,
-                            child: ClipOval(
-                              child: SizedBox(
-                                height: 180,
-                                width: 180,
-                                child: (_image != null)
-                                    ? Image.file(_image, fit: BoxFit.fill)
-                                    : Image.network(
-                                        'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/diner-restaurant-logo-design-template-0899ae0c7e72cded1c0abc4fe2d76ae4_screen.jpg?ts=1561476509',
-                                        fit: BoxFit.fill,
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 18),
-                          child: IconButton(
-                            iconSize: 50,
-                            padding: EdgeInsets.all(0),
-                            icon: Icon(Icons.image),
-                            onPressed: () {
-                              getImage();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    RaisedButton(
-                        child: Text(
-                          "إنشاء",
-                          style: TextStyle(color: Colors.white, fontSize: 22),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
-                        ),
-                        color: Colors.pink[400],
-                        onPressed: () async {
-                          if (_formKey.currentState.validate() ||
-                              _image != null) {
-                            uploadImage(context);
-                          }
-                        })
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
