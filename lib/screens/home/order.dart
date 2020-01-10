@@ -12,11 +12,8 @@ class OrderList extends StatefulWidget {
 enum ConfirmAction { CANCEL, ACCEPT }
 
 class _OrderListState extends State<OrderList> {
-  //--------------Order List-----------------
-  List<Order> orderFoods = new List<Order>();
-  List<DropdownMenuItem<Order>> _listViewOrder;
-  //--------------End Order List-----------------
-
+  List<String> foodsList = new List();
+  List<String> foodsCount = new List();
   //------------ Authentication Call
   final AuthService _authService = AuthService();
 //-------------- End Authentication Call
@@ -102,63 +99,158 @@ class _OrderListState extends State<OrderList> {
                       children: <Widget>[
                         ListTile(
                           onLongPress: () {
-                            _asyncConfirmDialog(context, snapshot, index);
+                            
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SingleChildScrollView(
+                                    child: Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(32.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Text(
+                                              snapshot.data.documents[index]
+                                                  .documentID,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .accentColor,
+                                                fontSize: 24.0,
+                                              ),
+                                            ),
+                                            // StreamBuilder<QuerySnapshot>(
+                                            //     stream: Firestore.instance
+                                            //         .collection('Requests')
+                                            //         .document(snapshot
+                                            //             .data
+                                            //             .documents[index]
+                                            //             .documentID)
+                                            //         .collection('foods')
+                                            //         .snapshots(),
+                                            //     builder: (context,
+                                            //         snapshotf) {
+                                            //       return ListView.builder(
+                                            //         itemCount: snapshotf
+                                            //             .data.documents.length,
+                                            //         itemBuilder:
+                                            //             (context, index) {
+                                            //           return Card(
+                                            //             child: ListTile(
+                                            //               title: Text(
+                                            //                   snapshotf
+                                            //                           .data
+                                            //                           .documents[
+                                            //                               index]
+                                            //                           .data[
+                                            //                       'prodectname']),
+                                            //             ),
+                                            //           );
+                                            //         },
+                                            //       );
+                                            //     }),
+                                            DropdownButton(
+                                              hint: Text('حالة الطلب'),
+                                              items: _dropDownItem(),
+                                              onChanged: (val) {
+                                                setState(() {
+                                                  orderStatus[index] = val;
+                                                });
+                                                if (orderStatus[index] ==
+                                                    "يتم تحضير الطلب") {
+                                                  statusCode = '0';
+                                                } else if (orderStatus[index] ==
+                                                    "الطلب في طريقه اليك") {
+                                                  statusCode = '1';
+                                                } else {
+                                                  statusCode = '2';
+                                                }
+                                              },
+                                              value:
+                                                  orderStatus[index].toString(),
+                                            ),
+
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                RaisedButton(
+                                                  child: Text('تحديث'),
+                                                  onPressed: () {
+                                                    Firestore.instance
+                                                        .collection('Requests')
+                                                        .document(snapshot
+                                                            .data
+                                                            .documents[index]
+                                                            .documentID)
+                                                        .updateData({
+                                                      'status': statusCode
+                                                    });
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                                SizedBox(
+                                                  width: 15,
+                                                ),
+                                                RaisedButton(
+                                                  child: Text('حذف'),
+                                                  onPressed: () =>_asyncConfirmDialog(context, snapshot, index),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
                           },
                           onTap: () {
                             showModalBottomSheet(
                                 context: context,
                                 builder: (BuildContext context) {
+//--------------------------Test JSON
+                                  foodsList = new List<String>();
+                                  foodsCount = new List<String>();
+                                  for (var i = 0; i < 200; i++) {
+                                    String name = '';
+                                    String count = '';
+                                    try {
+                                      name = snapshot.data.documents[index]
+                                          .data['foods'][i]['prodectname']
+                                          .toString();
+                                      count = snapshot.data.documents[index]
+                                          .data['foods'][i]['quantity']
+                                          .toString();
+                                    } catch (e) {
+                                      name = '';
+                                    }
+
+                                    if (name == '') {
+                                      break;
+                                    } else {
+                                      foodsList.add(name);
+                                      foodsCount.add(count);
+                                    }
+                                  }
+//-------------------------End test
                                   return Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(32.0),
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text(
-                                            snapshot.data.documents[index]
-                                                .documentID,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color:
-                                                  Theme.of(context).accentColor,
-                                              fontSize: 24.0,
+                                    padding: EdgeInsets.all(10),
+                                    child: ListView.builder(
+                                        itemCount: foodsList.length,
+                                        itemBuilder: (context, index) {
+                                          return Card(
+                                            child: ListTile(
+                                              title: Text(
+                                                foodsList[index],
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                              ),
+                                              subtitle: Text(' العدد: ' +
+                                                  foodsCount[index]),
                                             ),
-                                          ),
-                                          DropdownButton(
-                                            hint: Text('حالة الطلب'),
-                                            items: _dropDownItem(),
-                                            onChanged: (val) {
-                                              setState(() {
-                                                orderStatus[index] = val;
-                                              });
-                                              if (orderStatus[index] ==
-                                                  "يتم تحضير الطلب") {
-                                                statusCode = '0';
-                                              } else if (orderStatus[index] ==
-                                                  "الطلب في طريقه اليك") {
-                                                statusCode = '1';
-                                              } else {
-                                                statusCode = '2';
-                                              }
-                                            },
-                                            value:
-                                                orderStatus[index].toString(),
-                                          ),
-                                          RaisedButton(
-                                            child: Text('تحديث'),
-                                            onPressed: () {
-                                              Firestore.instance
-                                                  .collection('Requests')
-                                                  .document(snapshot
-                                                      .data
-                                                      .documents[index]
-                                                      .documentID)
-                                                  .updateData(
-                                                      {'status': statusCode});
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                          );
+                                        }),
                                   );
                                 });
                           },
