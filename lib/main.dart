@@ -3,6 +3,7 @@ import 'package:restaurantapp/services/authServices.dart';
 import 'screens/wrapper.dart';
 import 'package:provider/provider.dart';
 
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {

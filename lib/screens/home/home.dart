@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:restaurantapp/home_widgets/main_buttons.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:restaurantapp/services/authServices.dart';
 import 'dart:io';
 import 'package:restaurantapp/services/firestoreServices.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 //import 'package:path/path.dart';
 
@@ -20,6 +20,40 @@ class _HomeState extends State<Home> {
   String url;
   File _image;
   var selectedSection;
+
+  //-----------------------init Firebase messaging
+  final Firestore _db = Firestore.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fcm.requestNotificationPermissions(IosNotificationSettings());
+    _fcm.getToken().then((token){
+print(token);
+    });
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("Message: $message");
+        final snackbar = SnackBar(
+          content: Text(message['Notification']['title']),
+          action: SnackBarAction(
+            label: 'Go',
+            onPressed: () {},
+          ),
+        );
+        Scaffold.of(context).showSnackBar(snackbar);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("Message: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("Message: $message");
+      },
+    );
+  }
+  //-----------------------END init Firebase messaging
 
   //Progress dialog
   ProgressDialog pr;

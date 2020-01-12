@@ -190,6 +190,7 @@ class _AddDishesState extends State<AddDishes> {
                     height: 25,
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
